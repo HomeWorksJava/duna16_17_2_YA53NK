@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Start Page</title>
+        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    </head>
+    <body>   
+        <h2> Gépjármű kiválasztása: </h2>
+        <form id="gepjarmuform" action="rest/busz/hozzaad" method="POST">
+            <select onchange="actionchange()" id="gepjarmuvek" name="gepjarmuvek">
+                <option>Busz</option> 
+                <option>Auto</option> 
+                <option>Motor</option>
+            </select>
+        <h2> Gépjármű hozzáadása: </h2>
+            <label for="gyarto">Gyártó:</label>
+            <input type="text" id="gyarto" name="gyarto" class="form-control" placeholder="Pl.:Mercedes">
+            <label for="hengerurtartalom">Hengerűrtartalom:</label>
+            <input type="text" id="hengerurtartalom" name="hengerurtartalom" class="form-control" placeholder="3000">
+            <label for="tipus">Típusa:</label>
+            <input type="text" id="tipus" name="tipus" class="form-control" placeholder="Pl:SL300">
+            <label id="multilabel" for="szemelyek">Szállítható személyek száma(betűvel):</label>
+            <input type="text" id="szemelyek" name="szemelyek" class="form-control" placeholder="Személyek">         
+            <button type="submit" class="btn btn-success">Hozzáad</button>
+        </form>
+        <hr>
+        <h2> Évjárat megadása: </h2>
+        <form action="rest/evjarat/hozzaad" method="POST">
+            <label for="idoszak">Időszak</label>
+            <input type="text" id="idoszak" name="idoszak" class="form-control" placeholder="Időszak">
+            <label for="szarmazas">Származás</label>
+            <input type="text" id="szarmazas" name="szarmazas" class="form-control" placeholder="Származás">
+            <label for="evjarat">Évjárat</label>
+            <input type="text" id="evjarat" name="evjarat" class="form-control" placeholder="Évjárat">
+                        
+            <button type="submit" class="btn btn-success">Hozzáad</button>
+        </form>
+        <hr>
+        <h2> Ár megadása: </h2>
+        <form action="rest/ar/hozzaad" method="POST">
+            <label for="gepjarmuvek">Gépjárművek</label>
+            <input type="text" id="gepjarmuvek" name="gepjarmuvek" class="form-control" placeholder="Gépjárművek">
+            <label for="evjarat">Évjárat</label>
+            <input type="text" id="evjarat" name="evjarat" class="form-control" placeholder="Évjárat">
+            <label for="ar">Ár</label>
+            <input type="text" id="ar" name="ar" class="form-control" placeholder="ÁR"> 
+            <button type="submit" class="btn btn-success">Hozzáad</button>
+        </form>
+        <hr>
+        
+        <h2> Busz választása: </h2>
+        <select id="buszok">            
+        </select>        
+        <select id="evjarat">            
+        </select>
+        
+        <script>
+                 
+              loadLists("http://localhost:8080/gepjarmu/rest/busz/osszes","buszok","tipus");
+              loadLists("http://localhost:8080/gepjarmu/rest/evjarat/osszes","evjarat","szarmazas");
+    
+    
+                
+            function loadLists(url, id, tulajdonsag){
+                var xmlHttp = new XMLHttpRequest();
+                 xmlHttp.open("GET", url , true);
+                 xmlHttp.setRequestHeader("Content-Type","application/json");
+                 xmlHttp.responseType = "json";
+    
+                 xmlHttp.onload = function()
+                 {
+                  var selectedList = document.getElementById(id);            
+              
+                  for(var x in xmlHttp.response)
+                  {
+                     var option = document.createElement("option");                    
+                     option.text = xmlHttp.response[x][tulajdonsag];                                         
+                     option.value = xmlHttp.response[x].id;
+                     selectedList.appendChild(option);
+                  }
+                 };                 
+                 xmlHttp.send();
+            }
+                  
+           
+           function actionchange()
+           {
+            var chooser = document.getElementById("gepjarmuvek").value;                   
+           
+               switch(chooser)
+               {
+                   case "Busz":
+                       document.getElementById("gepjarmuform").setAttribute("action", "rest/busz/hozzaad");
+                       document.getElementById("multilabel").innerHTML="Szállítható személyek száma(betűvel):";
+                       document.getElementById("szemelyek").setAttribute("name", "szemelyek");
+                       document.getElementById("szemelyek").setAttribute("placeholder","Pl.: 30");
+                       break;
+                   case "Motor":
+                       document.getElementById("gepjarmuform").setAttribute("action", "rest/motor/hozzaad");
+                       document.getElementById("multilabel").innerHTML="Ütemszám(betűvel)";
+                       document.getElementById("szemelyek").setAttribute("name", "utem");
+                       document.getElementById("szemelyek").setAttribute("placeholder","Kettő vagy Négy");
+                       break;
+                   case "Auto":
+                       document.getElementById("gepjarmuform").setAttribute("action", "rest/auto/hozzaad");
+                       document.getElementById("multilabel").innerHTML="Üzemanyagtípusa";
+                       document.getElementById("szemelyek").setAttribute("name", "uzemanyag");
+                       document.getElementById("szemelyek").setAttribute("placeholder","Benzin vagy Diesel");
+                       break;
+               }
+           }             
+        </script>
+    </body>
+</html>
